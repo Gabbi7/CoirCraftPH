@@ -1,0 +1,191 @@
+@import "tailwindcss";
+
+@theme {
+  --color-forest: #2D5016;
+  --color-forest-dark: #1f3a0f;
+  --color-forest-light: #3d6b1f;
+  --color-amber: #D4A843;
+  --color-amber-dark: #b8902e;
+  --color-amber-light: #e8be5a;
+  --color-stone-bg: #FFF8F0;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #FFF8F0;
+  color: #1a1a1a;
+  margin: 0;
+  padding: 0;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #2D5016; border-radius: 3px; }
+
+/* Animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(45, 80, 22, 0.3); }
+  50% { box-shadow: 0 0 0 8px rgba(45, 80, 22, 0); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0e8d8 25%, #e8dcc8 50%, #f0e8d8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* Hero overlay */
+.hero-overlay {
+  background: linear-gradient(135deg, rgba(45, 80, 22, 0.85) 0%, rgba(45, 80, 22, 0.6) 50%, rgba(212, 168, 67, 0.3) 100%);
+}
+
+/* Glass card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Gradient text */
+.text-gradient {
+  background: linear-gradient(135deg, #2D5016, #D4A843);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Hover card effect */
+.hover-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(45, 80, 22, 0.15);
+}
+
+/* Green button */
+.btn-forest {
+  background: #2D5016;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+.btn-forest:hover {
+  background: #1f3a0f;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(45, 80, 22, 0.4);
+}
+.btn-forest:active { transform: translateY(0); }
+
+/* Amber button */
+.btn-amber {
+  background: #D4A843;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+.btn-amber:hover {
+  background: #b8902e;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(212, 168, 67, 0.4);
+}
+
+/* Input styles */
+.input-base {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #e5d5c0;
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+.input-base:focus {
+  border-color: #2D5016;
+  box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Table */
+.table-base {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table-base th {
+  text-align: left;
+  padding: 12px 16px;
+  background: #f5ece0;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #5a4030;
+}
+.table-base td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0e8d8;
+  font-size: 14px;
+  vertical-align: middle;
+}
+.table-base tr:hover td {
+  background: #fdf6ee;
+}
+
+/* Dialog overlay */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.dialog-content {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: fadeInUp 0.3s ease;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+}
