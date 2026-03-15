@@ -25,16 +25,27 @@ export default function ProductDetailPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setLoading(true);
-        setTimeout(() => {
-            const p = Products.getById(id);
-            if (!p) { navigate('/products'); return; }
-            setProduct(p);
-            const all = Products.getActive();
-            setRelated(all.filter(x => x.category === p.category && x.id !== p.id).slice(0, 4));
-            setLoading(false);
-        }, 300);
-    }, [id]);
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const p = await Products.getById(id);
+                if (!p) { 
+                    navigate('/products'); 
+                    return; 
+                }
+                setProduct(p);
+                
+                const all = await Products.getActive();
+                setRelated(all.filter(x => x.category === p.category && x.id !== p.id).slice(0, 4));
+            } catch (error) {
+                console.error('Failed to fetch product details:', error);
+                navigate('/products');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [id, navigate]);
 
     const handleAddToCart = () => {
         if (!user) {

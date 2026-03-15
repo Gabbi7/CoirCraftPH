@@ -8,7 +8,7 @@ const PIE_COLORS = ['#2D5016', '#D4A843', '#5a9e3a', '#c07800', '#0077aa', '#e65
 
 export default function SellerReports() {
     const [salesData, setSalesData] = useState([]);
-    const [categoryData, setCategoryData] = useState([]);
+    const [monthlyData, setMonthlyData] = useState([]);
     const [stats, setStats] = useState({
         todaySales: 0, todayOrders: 0,
         monthlySales: 0, monthlyOrders: 0,
@@ -22,79 +22,90 @@ export default function SellerReports() {
     });
 
     useEffect(() => {
-        const allOrders = Orders.getAll().filter(o => o.status !== 'Cancelled');
-        const allProducts = Products.getAll();
-        
-        const today = moment().format('YYYY-MM-DD');
-        const thisMonth = moment().format('YYYY-MM');
+        const fetchData = async () => {
+            try {
+                const data = await Orders.getAll();
+                const allOrders = data.filter(o => o.status !== 'Cancelled');
+                const allProducts = await Products.getAll();
+                
+                const today = moment().format('YYYY-MM-DD');
+                const thisMonth = moment().format('YYYY-MM');
 
-        let tSales = 0, tOrders = 0;
-        let mSales = 0, mOrders = 0;
-        let totRev = 0;
+                let tSales = 0, tOrders = 0;
+                let mSales = 0, mOrders = 0;
+                let totRev = 0;
 
-        // Daily sales for last 7 days chart
-        const days = Array.from({ length: 7 }, (_, i) => {
-            const d = moment().subtract(6 - i, 'days');
-            return {
-                day: d.format('ddd'),
-                date: d.format('YYYY-MM-DD'),
-                sales: 0,
-                orders: 0,
-            };
-        });
+                // Daily sales for last 7 days chart
+                const days = Array.from({ length: 7 }, (_, i) => {
+                    const d = moment().subtract(6 - i, 'days');
+                    return {
+                        day: d.format('ddd'),
+                        date: d.format('YYYY-MM-DD'),
+                        sales: 0,
+                        orders: 0,
+                    };
+                });
 
-        const catMap = {};
+                // Monthly sales for last 6 months chart
+                const months = Array.from({ length: 6 }, (_, i) => {
+                    const m = moment().subtract(5 - i, 'months');
+                    return {
+                        month: m.format('MMM'),
+                        monthKey: m.format('YYYY-MM'),
+                        sales: 0,
+                    };
+                });
 
-        allOrders.forEach(o => {
-            const oDate = moment(o.created_at).format('YYYY-MM-DD');
-            const oMonth = moment(o.created_at).format('YYYY-MM');
+                allOrders.forEach(o => {
+                    const oDate = moment(o.created_at).format('YYYY-MM-DD');
+                    const oMonth = moment(o.created_at).format('YYYY-MM');
 
-            totRev += o.total_amount;
+                    totRev += o.total_amount;
 
-            if (oDate === today) {
-                tSales += o.total_amount;
-                tOrders += 1;
+                    if (oDate === today) {
+                        tSales += o.total_amount;
+                        tOrders += 1;
+                    }
+                    if (oMonth === thisMonth) {
+                        mSales += o.total_amount;
+                        mOrders += 1;
+                    }
+
+                    const dayEntry = days.find(day => day.date === oDate);
+                    if (dayEntry) { dayEntry.sales += o.total_amount; dayEntry.orders += 1; }
+
+                    const monthEntry = months.find(m => m.monthKey === oMonth);
+                    if (monthEntry) { monthEntry.sales += o.total_amount; }
+                });
+
+                setStats({
+                    todaySales: tSales, todayOrders: tOrders,
+                    monthlySales: mSales, monthlyOrders: mOrders,
+                    totalRevenue: totRev, totalOrders: allOrders.length,
+                    avgOrder: allOrders.length ? totRev / allOrders.length : 0
+                });
+
+                setSalesData(days.map(d => ({ ...d, sales: Math.round(d.sales) })));
+                setMonthlyData(months.map(m => ({ ...m, sales: Math.round(m.sales) })));
+
+                // Inventory mapping
+                let totStock = 0;
+                let outStockCount = 0;
+                allProducts.forEach(p => {
+                    totStock += (p.stock || 0);
+                    if (p.stock === 0) outStockCount++;
+                });
+
+                setInventory({
+                    totalProducts: allProducts.length,
+                    totalStock: totStock,
+                    outOfStock: outStockCount
+                });
+            } catch (error) {
+                console.error('Failed to fetch report data:', error);
             }
-            if (oMonth === thisMonth) {
-                mSales += o.total_amount;
-                mOrders += 1;
-            }
-
-            const entry = days.find(day => day.date === oDate);
-            if (entry) { entry.sales += o.total_amount; entry.orders += 1; }
-
-            // Category tracking
-            (o.items || []).forEach(item => {
-                const product = allProducts.find(p => p.id === item.product_id);
-                const cat = product?.category || item.category || 'Other';
-                catMap[cat] = (catMap[cat] || 0) + (item.product_price * item.quantity);
-            });
-        });
-
-        setStats({
-            todaySales: tSales, todayOrders: tOrders,
-            monthlySales: mSales, monthlyOrders: mOrders,
-            totalRevenue: totRev, totalOrders: allOrders.length,
-            avgOrder: allOrders.length ? totRev / allOrders.length : 0
-        });
-
-        setSalesData(days.map(d => ({ ...d, sales: Math.round(d.sales) })));
-        setCategoryData(Object.entries(catMap).map(([name, value]) => ({ name, value: Math.round(value) })).sort((a, b) => b.value - a.value));
-
-        // Inventory mapping
-        let totStock = 0;
-        let outStockCount = 0;
-        allProducts.forEach(p => {
-            totStock += (p.stock || 0);
-            if (p.stock === 0) outStockCount++;
-        });
-
-        setInventory({
-            totalProducts: allProducts.length,
-            totalStock: totStock,
-            outOfStock: outStockCount
-        });
-
+        };
+        fetchData();
     }, []);
 
     const statCardStyle = {
@@ -175,24 +186,26 @@ export default function SellerReports() {
                     </ResponsiveContainer>
                 </div>
 
-                {/* Sales by Category */}
+                {/* Monthly Sales Performance */}
                 <div style={{ background: 'white', border: '1px solid #eae5db', borderRadius: '8px', padding: '24px', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
                     <div style={{ fontSize: '14px', fontWeight: 600, color: '#333', marginBottom: '24px' }}>
-                        Sales by Category
+                        Monthly Sales Performance
                     </div>
-                    {categoryData.length === 0 ? (
+                    {monthlyData.length === 0 ? (
                         <div style={{ height: '260px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: '13px' }}>
                             No sales data yet
                         </div>
                     ) : (
                         <ResponsiveContainer width="100%" height={260}>
-                            <PieChart>
-                                <Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`} labelLine={false} stroke="none">
-                                    {categoryData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                                </Pie>
-                                <Tooltip formatter={(v) => formatPrice(v)} contentStyle={{ borderRadius: '8px', border: '1px solid #eae5db', fontSize: '12px' }} />
-                                <Legend formatter={(v) => <span style={{ fontSize: '11px', color: '#555' }}>{v}</span>} iconType="circle" iconSize={8} />
-                            </PieChart>
+                            <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#888' }} axisLine={{ stroke: '#e0dcd2' }} tickLine={false} />
+                                <YAxis tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} tickFormatter={v => (v >= 1000 ? (v / 1000).toFixed(1) + 'k' : v)} />
+                                <Tooltip
+                                    formatter={(v) => [formatPrice(v), 'Monthly Sales']}
+                                    contentStyle={{ borderRadius: '8px', border: '1px solid #eae5db', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+                                />
+                                <Bar dataKey="sales" fill="#D4A843" radius={[2, 2, 0, 0]} maxBarSize={40} />
+                            </BarChart>
                         </ResponsiveContainer>
                     )}
                 </div>

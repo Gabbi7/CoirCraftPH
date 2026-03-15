@@ -12,7 +12,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(\App\Models\Product::all());
     }
 
     /**
@@ -20,7 +20,18 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric',
+            'category' => 'required|string',
+            'image_url' => 'nullable|string',
+            'stock' => 'integer',
+            'featured_type' => 'string',
+        ]);
+
+        $product = \App\Models\Product::create($validated);
+        return response()->json($product, 201);
     }
 
     /**
@@ -28,7 +39,7 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return response()->json(\App\Models\Product::findOrFail($id));
     }
 
     /**
@@ -36,7 +47,9 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $product = \App\Models\Product::findOrFail($id);
+        $product->update($request->all());
+        return response()->json($product);
     }
 
     /**
@@ -44,6 +57,7 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        \App\Models\Product::destroy($id);
+        return response()->json(null, 204);
     }
 }

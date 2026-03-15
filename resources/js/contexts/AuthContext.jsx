@@ -8,7 +8,20 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const [isPreview, setIsPreview] = useState(false);
+
     useEffect(() => {
+        // Detect if the application is running inside an iframe
+        const isIframe = window.self !== window.top;
+        const queryParams = new URLSearchParams(window.location.search);
+        const explicitPreview = queryParams.get('preview_mode') === 'true';
+
+        if (isIframe || explicitPreview) {
+            setIsPreview(true);
+            setLoading(false);
+            return; // Skip authentication logic in preview mode
+        }
+
         const stored = localStorage.getItem('coco_auth_user');
         if (stored) {
             try { setUser(JSON.parse(stored)); } catch { }
@@ -72,7 +85,7 @@ export function AuthProvider({ children }) {
     const isSeller = user?.role === 'seller' || user?.role === 'admin';
 
     return (
-        <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, updateMe, isAdmin, isSeller }}>
+        <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, updateMe, isAdmin, isSeller, isPreview }}>
             {children}
         </AuthContext.Provider>
     );

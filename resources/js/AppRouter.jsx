@@ -20,10 +20,10 @@ import TransactionsPage from './pages/buyer/TransactionsPage.jsx';
 // Seller pages
 import SellerDashboard from './pages/seller/SellerDashboard.jsx';
 import SellerInventory from './pages/seller/SellerInventory.jsx';
-import SellerCategories from './pages/seller/SellerCategories.jsx';
 import SellerStorefront from './pages/seller/SellerStorefront.jsx';
 import SellerReports from './pages/seller/SellerReports.jsx';
 import SellerSignInPage from './pages/seller/SellerSignInPage.jsx';
+import SellerStoreView from './pages/seller/SellerStoreView.jsx';
 
 // Route Guards
 const ProtectedRoute = ({ children, role }) => {
@@ -33,6 +33,14 @@ const ProtectedRoute = ({ children, role }) => {
         return <Navigate to={role === 'seller' ? "/seller/signin" : "/signin"} replace />;
     }
     if (role && user.role !== role && user.role !== 'admin') {
+        return <Navigate to="/" replace />;
+    }
+    return children;
+};
+
+const GuestOnlyRoute = ({ children }) => {
+    const { isPreview } = useAuth();
+    if (isPreview) {
         return <Navigate to="/" replace />;
     }
     return children;
@@ -50,22 +58,21 @@ export default function AppRouter() {
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/checkout" element={<ProtectedRoute role="buyer"><CheckoutPage /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-                <Route path="/signin" element={<SignInPage />} />
-                <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/signin" element={<GuestOnlyRoute><SignInPage /></GuestOnlyRoute>} />
+                <Route path="/signup" element={<GuestOnlyRoute><SignUpPage /></GuestOnlyRoute>} />
                 <Route path="/transactions" element={<ProtectedRoute><TransactionsPage /></ProtectedRoute>} />
             </Route>
 
             {/* Seller routes */}
             <Route path="/seller/signin" element={<SellerSignInPage />} />
-
-            
             <Route element={<ProtectedRoute role="seller"><SellerLayout /></ProtectedRoute>}>
                 <Route path="/seller" element={<SellerDashboard />} />
                 <Route path="/seller/inventory" element={<SellerInventory />} />
-                <Route path="/seller/categories" element={<SellerCategories />} />
                 <Route path="/seller/storefront" element={<SellerStorefront />} />
                 <Route path="/seller/reports" element={<SellerReports />} />
-            </Route>
+                <Route path="/seller/profile" element={<ProfilePage />} />
+                <Route path="/seller/store" element={<SellerStoreView />} />
+            </Route> 
         </Routes>
     );
 }

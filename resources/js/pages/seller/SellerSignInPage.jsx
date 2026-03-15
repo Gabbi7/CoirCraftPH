@@ -8,7 +8,7 @@ export default function SellerSignInPage() {
     const { signIn } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from || '/seller';
+    const from = '/seller';
     const [form, setForm] = useState({ email: '', password: '' });
     const [showPw, setShowPw] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -22,7 +22,7 @@ export default function SellerSignInPage() {
                 throw new Error('This account does not have seller access.');
             }
             toast.success('Welcome to Seller Center!');
-            navigate(from, { replace: true });
+            navigate('/seller', { replace: true });
         } catch (err) {
             toast.error(err.message);
         } finally {

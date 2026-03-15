@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, Leaf } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext.jsx';
@@ -10,6 +11,20 @@ const SHIPPING_THRESHOLD = 2000;
 export default function CartPage() {
     const { items, updateQty, removeItem, subtotal, clearCart } = useCart();
     const navigate = useNavigate();
+    const [allProducts, setAllProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchAll = async () => {
+            try {
+                const data = await Products.getAll();
+                setAllProducts(data);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchAll();
+    }, []);
 
     const shippingFee = subtotal >= SHIPPING_THRESHOLD ? 0 : 150;
     const total = subtotal + shippingFee;
@@ -40,7 +55,7 @@ export default function CartPage() {
                     {/* Cart items */}
                     <div style={{ gridColumn: 'span 2' }}>
                         {items.map(item => {
-                            const p = Products.getById(item.product_id);
+                            const p = allProducts.find(x => x.id === item.product_id);
                             const maxStock = p?.stock ?? 99;
                             return (
                                 <div key={item.product_id} className="hover-card"

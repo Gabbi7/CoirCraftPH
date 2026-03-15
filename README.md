@@ -1,3 +1,33 @@
+# CoirCraft PH - E-commerce Project
+
+## 🚀 Quick Start / Setup
+
+If you are just pulling this code for the first time or need to reset your database, follow these easy steps:
+
+1.  **Environment Setup**: 
+    - Copy `.env.example` to `.env`.
+    - Set your database credentials (`DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`) in `.env`.
+2.  **Install Dependencies**:
+    ```bash
+    composer install
+    npm install
+    ```
+3.  **Sync Database (Best & Easiest Way)**: 
+    Run this single command to create all tables and fill them with the products/users:
+    ```bash
+    php artisan migrate:fresh --seed
+    ```
+4.  **Run the Project**:
+    ```bash
+    # Terminal 1 (Backend)
+    php artisan serve
+    
+    # Terminal 2 (Frontend)
+    npm run dev
+    ```
+
+---
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">

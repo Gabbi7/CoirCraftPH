@@ -16,22 +16,42 @@ export default function SellerDashboard() {
     const [stats, setStats] = useState({ todaySales: 0, monthlySales: 0, totalOrders: 0, totalProducts: 0 });
     const [recentOrders, setRecentOrders] = useState([]);
 
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
-        const now = new Date();
-        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const allOrders = Orders.getAll();
-        const allProducts = Products.getAll();
+        const fetchStats = async () => {
+            setLoading(true);
+            try {
+                const [allOrders, allProducts] = await Promise.all([
+                    Orders.getAll(),
+                    Products.getAll()
+                ]);
 
-        const todaySales = allOrders
-            .filter(o => new Date(o.created_at) >= startOfDay && o.status !== 'Cancelled')
-            .reduce((s, o) => s + o.total_amount, 0);
-        const monthlySales = allOrders
-            .filter(o => new Date(o.created_at) >= startOfMonth && o.status !== 'Cancelled')
-            .reduce((s, o) => s + o.total_amount, 0);
+                const now = new Date();
+                const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-        setStats({ todaySales, monthlySales, totalOrders: allOrders.length, totalProducts: allProducts.length });
-        setRecentOrders(allOrders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5));
+                const todaySales = allOrders
+                    .filter(o => new Date(o.created_at) >= startOfDay && o.status !== 'Cancelled')
+                    .reduce((s, o) => s + o.total_amount, 0);
+                const monthlySales = allOrders
+                    .filter(o => new Date(o.created_at) >= startOfMonth && o.status !== 'Cancelled')
+                    .reduce((s, o) => s + o.total_amount, 0);
+
+                setStats({ 
+                    todaySales, 
+                    monthlySales, 
+                    totalOrders: allOrders.length, 
+                    totalProducts: allProducts.length 
+                });
+                setRecentOrders(allOrders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5));
+            } catch (error) {
+                console.error('Failed to fetch dashboard stats:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStats();
     }, []);
 
     const STAT_CARDS = [
@@ -89,7 +109,7 @@ export default function SellerDashboard() {
                                 return (
                                     <div key={order.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid #f5ece0', flexWrap: 'wrap', gap: '8px' }}>
                                         <div>
-                                            <div style={{ fontWeight: 700, color: '#1a1a1a', fontSize: '14px' }}>#{order.id.slice(-6).toUpperCase()}</div>
+                                            <div style={{ fontWeight: 700, color: '#1a1a1a', fontSize: '14px' }}>#{String(order.id).slice(-6).toUpperCase()}</div>
                                             <div style={{ color: '#888', fontSize: '12px', marginTop: '2px' }}>{order.user_name} · {timeAgo(order.created_at)}</div>
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

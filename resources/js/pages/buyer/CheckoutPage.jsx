@@ -41,7 +41,7 @@ export default function CheckoutPage() {
         }
         setPlacing(true);
         try {
-            const order = Orders.create({
+            const order = await Orders.create({
                 user_email: user.email,
                 user_name: user.name,
                 items: items.map(i => ({ ...i })),
@@ -52,7 +52,8 @@ export default function CheckoutPage() {
                 status: 'Pending',
             });
             // Deduct stock
-            items.forEach(item => Products.decrementStock(item.product_id, item.quantity));
+            await Promise.all(items.map(item => Products.decrementStock(item.product_id, item.quantity)));
+            
             clearCart();
             setSuccess(order);
             toast.success('Order placed successfully! 🎉');
@@ -72,7 +73,7 @@ export default function CheckoutPage() {
                     </div>
                     <h1 style={{ fontFamily: 'Playfair Display, serif', fontWeight: 700, fontSize: '32px', color: '#1a1a1a', marginBottom: '12px' }}>Order Placed! 🎉</h1>
                     <p style={{ color: '#888', fontSize: '16px', marginBottom: '8px' }}>Thank you, {user.name}!</p>
-                    <p style={{ color: '#888', fontSize: '14px', marginBottom: '8px' }}>Order ID: <strong style={{ color: '#2D5016' }}>#{success.id.slice(-6).toUpperCase()}</strong></p>
+                    <p style={{ color: '#888', fontSize: '14px', marginBottom: '8px' }}>Order ID: <strong style={{ color: '#2D5016' }}>#{String(success.id).slice(-6).toUpperCase()}</strong></p>
                     <p style={{ color: '#888', fontSize: '14px', marginBottom: '32px' }}>Total: <strong style={{ color: '#2D5016' }}>{formatPrice(success.total_amount)}</strong></p>
                     <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
                         <button onClick={() => navigate('/transactions')}

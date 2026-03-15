@@ -27,12 +27,19 @@ export default function TransactionsPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setTimeout(() => {
-            const myOrders = Orders.getByEmail(user.email).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-            setOrders(myOrders);
-            setLoading(false);
-        }, 400);
-    }, []);
+        const fetchOrders = async () => {
+            setLoading(true);
+            try {
+                const data = await Orders.getByEmail(user.email);
+                setOrders(data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+            } catch (error) {
+                console.error('Failed to fetch orders:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchOrders();
+    }, [user.email]);
 
     const toggle = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
 
@@ -78,7 +85,7 @@ export default function TransactionsPage() {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
                                         <div>
                                             <div style={{ fontWeight: 800, fontSize: '15px', color: '#1a1a1a' }}>
-                                                #{order.id.slice(-6).toUpperCase()}
+                                                #{String(order.id).slice(-6).toUpperCase()}
                                             </div>
                                             <div style={{ color: '#888', fontSize: '12px', marginTop: '2px' }}>
                                                 {moment(order.created_at).format('MMM D, YYYY h:mm A')}

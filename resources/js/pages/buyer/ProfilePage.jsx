@@ -54,7 +54,7 @@ export default function ProfilePage() {
                     {/* Read-only fields */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
                         {[
-                            { label: (user?.role === 'seller' || user?.role === 'admin') ? 'Store Name' : 'Full Name', value: user?.name },
+                            { label: 'Full Name', value: user?.name },
                             { label: 'Email Address', value: user?.email },
                         ].map(field => (
                             <div key={field.label}>
@@ -84,7 +84,7 @@ export default function ProfilePage() {
                         {/* Address */}
                         <div style={{ marginBottom: '28px' }}>
                             <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, fontSize: '13px', color: '#5a4030', marginBottom: '8px' }}>
-                                <MapPin size={13} /> {(user?.role === 'seller' || user?.role === 'admin') ? 'Store Address' : 'Address'}
+                                <MapPin size={13} /> Address
                             </label>
                             <textarea
                                 value={form.address}
@@ -104,25 +104,6 @@ export default function ProfilePage() {
                     </form>
                 </div>
 
-                {/* Become a Seller Promotion */}
-                {user?.role !== 'seller' && user?.role !== 'admin' && (
-                    <div style={{ marginTop: '32px', padding: '32px', background: 'white', borderRadius: '20px', border: '1px solid #e5d5c0', boxShadow: '0 8px 32px rgba(45,80,22,0.05)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                        <div style={{ width: '56px', height: '56px', background: '#e8f0e0', color: '#2D5016', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
-                            <Store size={28} />
-                        </div>
-                        <h3 style={{ fontFamily: 'Playfair Display, serif', fontWeight: 700, fontSize: '20px', color: '#2D5016', marginBottom: '8px' }}>
-                            Start Selling on CoirCraft PH
-                        </h3>
-                        <p style={{ color: '#666', fontSize: '14px', maxWidth: '400px', marginBottom: '24px', lineHeight: '1.6' }}>
-                            Have quality coconut coir products? Join our growing community of sellers and reach customers nationwide.
-                        </p>
-                        <Link to="/signup?role=seller" style={{ textDecoration: 'none' }}>
-                            <button className="btn-forest" style={{ padding: '12px 32px', borderRadius: '12px', fontSize: '15px', fontWeight: 600 }}>
-                                Open Your Store
-                            </button>
-                        </Link>
-                    </div>
-                )}
             </div>
         </div>
     );

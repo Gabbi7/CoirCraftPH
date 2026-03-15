@@ -24,9 +24,9 @@ export default function Footer() {
                         <h3 style={{ color: 'white', fontWeight: 700, marginBottom: '24px', fontSize: '14px', letterSpacing: '1px' }}>CONTACT</h3>
                         <div className="space-y-4">
                             {[
-                                { Icon: Mail, text: 'info@coircraft.ph' },
-                                { Icon: Phone, text: '+63 917 123 4567' },
-                                { Icon: MapPin, text: 'Quezon City, Metro Manila, Philippines' },
+                                { Icon: Mail, text: 'devign@coircraft.ph' },
+                                { Icon: Phone, text: '0987654321' },
+                                { Icon: MapPin, text: 'Manila, Philippines' },
                             ].map(({ Icon, text }, i) => (
                                 <div key={i} className="flex items-center gap-3">
                                     <Icon size={16} color="#D4A843" strokeWidth={2.5} />
@@ -42,7 +42,7 @@ export default function Footer() {
                         <div className="space-y-3">
                             {[
                                 { to: '/products', label: 'All Products' },
-                                { to: '/featured', label: 'Storefront' },
+                                { to: '/featured', label: 'Featured' },
                                 { to: '/cart', label: 'Shopping Cart' },
                                 { to: '/transactions', label: 'Order History' },
                             ].map(link => (
@@ -57,9 +57,16 @@ export default function Footer() {
 
                 {/* Bottom section */}
                 <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '64px', paddingTop: '32px' }} className="text-center">
-                    <p style={{ fontSize: '13px', color: '#78a060', marginBottom: '8px' }}>
-                        © 2026 CoirCraft PH — Group Project
-                    </p>
+                    <div className="flex flex-col items-center gap-3">
+                        <img 
+                            src="/images/devign-logo.png" 
+                            alt="Devign Logo" 
+                            style={{ height: '24px', width: 'auto', opacity: 0.8 }} 
+                        />
+                        <p style={{ fontSize: '13px', color: '#78a060' }}>
+                            © 2026 CoirCraft PH — Devign
+                        </p>
+                    </div>
                     <p style={{ fontSize: '12px', color: '#567545', fontStyle: 'italic' }}>
                         For educational purposes only, and no copyright infringement is intended.
                     </p>

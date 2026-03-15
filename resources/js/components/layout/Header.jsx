@@ -6,7 +6,7 @@ import { useCart } from '../../contexts/CartContext.jsx';
 import { Storefront } from '../../lib/db.js';
 
 export default function Header() {
-    const { user, signOut, isSeller } = useAuth();
+    const { user, signOut, isSeller, isPreview } = useAuth();
     const { itemCount } = useCart();
     const navigate = useNavigate();
     const location = useLocation();
@@ -18,7 +18,6 @@ export default function Header() {
         { to: '/', label: 'Home' },
         { to: '/featured', label: 'Featured' },
         { to: '/products', label: 'Products' },
-        ...(!isSeller ? [{ to: '/signup?role=seller', label: 'Sell on CoirCraft' }] : []),
     ];
 
     const handleSignOut = () => {
@@ -134,6 +133,10 @@ export default function Header() {
                                             </div>
                                         </div>
                                     )}
+                                </div>
+                            ) : isPreview ? (
+                                <div style={{ background: '#f5ece0', color: '#5a4030', border: '1px solid #e5d5c0', borderRadius: '10px', padding: '8px 18px', fontSize: '14px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <Store size={16} /> Guest Preview
                                 </div>
                             ) : (
                                 <Link to="/signin" style={{ textDecoration: 'none' }}>

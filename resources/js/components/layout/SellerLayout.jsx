@@ -1,15 +1,15 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Package, Store, BarChart2, LogOut, ExternalLink, Tags, User, ClipboardList } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext.jsx';
+import Footer from './Footer.jsx';
 
 const navItems = [
     { to: '/seller', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/seller/inventory', icon: Package, label: 'Inventory' },
-    { to: '/seller/categories', icon: Tags, label: 'Categories' },
     { to: '/seller/storefront', icon: Store, label: 'Storefront' },
     { to: '/seller/reports', icon: BarChart2, label: 'Reports' },
-    { to: '/profile', icon: User, label: 'My Profile' },
-    { to: '/transactions', icon: ClipboardList, label: 'My Purchases' },
+    { to: '/seller/profile', icon: User, label: 'My Profile' },
+    { to: '/seller/store', icon: ExternalLink, label: 'Store' },
 ];
 
 export default function SellerLayout() {
@@ -51,7 +51,7 @@ export default function SellerLayout() {
                 {/* Nav items */}
                 <nav style={{ flex: 1, padding: '12px 8px' }}>
                     {navItems.map(({ to, icon: Icon, label }) => {
-                        const active = location.pathname === to || (to !== '/seller' && location.pathname.startsWith(to));
+                        const active = location.pathname === to || (to !== '/' && to !== '/seller' && location.pathname.startsWith(to));
                         return (
                             <Link key={to} to={to} style={{ textDecoration: 'none', display: 'block', marginBottom: '4px' }}>
                                 <div style={{
@@ -77,12 +77,6 @@ export default function SellerLayout() {
 
                 {/* Bottom */}
                 <div style={{ padding: '12px 8px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                    <Link to="/" style={{ textDecoration: 'none', display: 'block', marginBottom: '4px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderRadius: '8px', color: '#a8c890', fontSize: '13px', cursor: 'pointer', justifyContent: 'flex-start' }}>
-                            <ExternalLink size={16} />
-                            View Storefront
-                        </div>
-                    </Link>
                     <div onClick={handleSignOut} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderRadius: '8px', color: '#e07070', fontSize: '13px', cursor: 'pointer', justifyContent: 'flex-start' }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,100,100,0.1)'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
@@ -93,8 +87,11 @@ export default function SellerLayout() {
             </aside>
 
             {/* Main content */}
-            <main style={{ flex: 1, overflow: 'auto' }}>
-                <Outlet />
+            <main style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ flex: 1 }}>
+                    <Outlet />
+                </div>
+                <Footer />
             </main>
         </div>
     );

@@ -68,18 +68,14 @@ export default function SignUpPage() {
                             </span>
                         </div>
                     </Link>
-                    <p style={{ color: '#888', fontSize: '14px', marginTop: '8px' }}>Create your buyer account</p>
                 </div>
 
                 {/* Card */}
                 <div style={{ background: 'white', borderRadius: '24px', padding: '40px', boxShadow: '0 4px 32px rgba(45,80,22,0.08)', border: '1px solid #f0e8d8' }}>
                     
-                    <h2 style={{ fontWeight: 700, fontSize: '22px', color: '#1a1a1a', marginBottom: '8px' }}>
-                        Sign up as Buyer
+                    <h2 style={{ fontWeight: 700, fontSize: '22px', color: '#1a1a1a', marginBottom: '24px' }}>
+                        Get Started
                     </h2>
-                    <p style={{ color: '#888', fontSize: '14px', marginBottom: '24px' }}>
-                        Join our community of eco-conscious shoppers
-                    </p>
 
                     <form onSubmit={handleSubmit}>
                         <div style={{ display: 'flex', gap: '16px', marginBottom: '20px' }}>

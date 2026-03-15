@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
-import { Products, Categories } from '../../lib/db.js';
+import { Products, CATEGORIES } from '../../lib/db.js';
 import ProductCard from '../../components/ProductCard.jsx';
 
 const SORTS = [
@@ -27,7 +27,6 @@ function Skeleton() {
 export default function ProductsPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [products, setProducts] = useState([]);
-    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [sort, setSort] = useState('newest');
@@ -37,12 +36,18 @@ export default function ProductsPage() {
     });
 
     useEffect(() => {
-        setLoading(true);
-        setTimeout(() => {
-            setProducts(Products.getActive());
-            setCategories(Categories.getAll().map(c => c.name).sort());
-            setLoading(false);
-        }, 400);
+        const fetchProducts = async () => {
+            setLoading(true);
+            try {
+                const data = await Products.getActive();
+                setProducts(data);
+            } catch (error) {
+                console.error('Failed to fetch products:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProducts();
     }, []);
 
     const toggleCat = (cat) => {
@@ -105,7 +110,7 @@ export default function ProductsPage() {
 
                 {/* Category chips */}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
-                    {categories.map(cat => (
+                    {CATEGORIES.map(cat => (
                         <button key={cat} onClick={() => toggleCat(cat)}
                             style={{
                                 padding: '6px 16px', borderRadius: '99px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', border: '1.5px solid',

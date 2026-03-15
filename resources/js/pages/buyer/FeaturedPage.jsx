@@ -11,11 +11,8 @@ function ProductRow({ title, emoji, products, emptyMessage }) {
         <div style={{ marginBottom: '64px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }}>
                 <div>
-                    <div style={{ color: '#D4A843', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px' }}>
-                        {emoji} Featured Collection
-                    </div>
                     <h2 style={{ fontFamily: 'Playfair Display, serif', fontWeight: 700, fontSize: '32px', color: '#1a1a1a', margin: 0 }}>
-                        {title}
+                        {emoji} {title}
                     </h2>
                 </div>
             </div>
@@ -35,7 +32,6 @@ function ProductRow({ title, emoji, products, emptyMessage }) {
 function SkeletonRow() {
     return (
         <div style={{ marginBottom: '64px' }}>
-            <div style={{ width: '150px', height: '14px', background: '#e0d8c8', borderRadius: '4px', marginBottom: '12px' }} className="skeleton" />
             <div style={{ width: '250px', height: '36px', background: '#e0d8c8', borderRadius: '8px', marginBottom: '32px' }} className="skeleton" />
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
                 {Array(4).fill(0).map((_, i) => (
@@ -64,20 +60,26 @@ export default function FeaturedPage() {
     });
 
     useEffect(() => {
-        // Simulate network delay
-        setTimeout(() => {
-            const allProducts = Products.getActive();
-            
-            // Sort by sold_count to roughly order the categories
-            const sortedProducts = [...allProducts].sort((a, b) => (b.sold_count || 0) - (a.sold_count || 0));
+        const fetchCollections = async () => {
+            setLoading(true);
+            try {
+                const allProducts = await Products.getActive();
+                
+                // Sort by sold_count to roughly order the categories
+                const sortedProducts = [...allProducts].sort((a, b) => (b.sold_count || 0) - (a.sold_count || 0));
 
-            setCollections({
-                new: sortedProducts.filter(p => p.featured_type === 'New').slice(0, 8),
-                trending: sortedProducts.filter(p => p.featured_type === 'Trending').slice(0, 8),
-                bestSellers: sortedProducts.filter(p => p.featured_type === 'Best Seller').slice(0, 8),
-            });
-            setLoading(false);
-        }, 600);
+                setCollections({
+                    new: sortedProducts.filter(p => p.featured_type === 'New').slice(0, 8),
+                    trending: sortedProducts.filter(p => p.featured_type === 'Trending').slice(0, 8),
+                    bestSellers: sortedProducts.filter(p => p.featured_type === 'Best Seller').slice(0, 8),
+                });
+            } catch (error) {
+                console.error('Failed to fetch featured collections:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCollections();
     }, []);
 
     return (

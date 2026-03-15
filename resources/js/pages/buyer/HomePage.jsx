@@ -1,18 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Leaf, Shield, Truck, ShoppingBag } from 'lucide-react';
-import { Products, Storefront, Categories } from '../../lib/db.js';
+import { Products, Storefront, CATEGORIES } from '../../lib/db.js';
 import ProductCard from '../../components/ProductCard.jsx';
 
 const EMOJI_MAP = {
-    'Coir Rope': '🪢',
-    'Coir Mat': '🏠',
-    'Coir Net': '🕸️',
-    'Coir Pot': '🪴',
-    'Coir Board': '📋',
-    'Coir Fiber': '🌾',
-    'Coir Grow Bag': '🌱',
-    'Other': '📦',
+    'Gardening': '🪴',
+    'Home Products': '🏠',
+    'Agriculture': '🚜',
+    'Raw Materials': '🪵',
 };
 
 function Skeleton() {
@@ -36,16 +32,21 @@ export default function HomePage() {
     const config = Storefront.get();
 
     useEffect(() => {
-        setTimeout(() => {
-            const products = Products.getActive();
-            const f = products
-                .filter(p => p.featured_type !== 'None')
-                .sort((a, b) => b.sold_count - a.sold_count)
-                .slice(0, 8);
-            setFeatured(f);
-            setCategories(Categories.getAll());
-            setLoading(false);
-        }, 500);
+        const fetchFeatured = async () => {
+            try {
+                const products = await Products.getActive();
+                const f = products
+                    .filter(p => p.featured_type !== 'None')
+                    .sort((a, b) => b.sold_count - a.sold_count)
+                    .slice(0, 8);
+                setFeatured(f);
+            } catch (error) {
+                console.error('Failed to fetch featured products:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchFeatured();
     }, []);
 
     return (
@@ -151,13 +152,13 @@ export default function HomePage() {
                         <h2 style={{ fontFamily: 'Playfair Display, serif', fontWeight: 700, fontSize: '36px', color: '#1a1a1a', margin: 0 }}>Product Categories</h2>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        {categories.map(cat => (
-                            <Link key={cat.id} to={`/products?cat=${encodeURIComponent(cat.name)}`} style={{ textDecoration: 'none' }}>
+                        {CATEGORIES.map(cat => (
+                            <Link key={cat} to={`/products?cat=${encodeURIComponent(cat)}`} style={{ textDecoration: 'none' }}>
                                 <div className="hover-card"
                                     style={{ background: '#FFF8F0', border: '1.5px solid #f0e8d8', borderRadius: '16px', padding: '24px 16px', textAlign: 'center', cursor: 'pointer' }}>
-                                    <div style={{ fontSize: '36px', marginBottom: '12px' }}>{EMOJI_MAP[cat.name] || '🌿'}</div>
-                                    <div style={{ fontWeight: 700, color: '#2D5016', fontSize: '14px', marginBottom: '4px' }}>{cat.name}</div>
-                                    <div style={{ color: '#888', fontSize: '12px' }}>{cat.description || ''}</div>
+                                    <div style={{ fontSize: '36px', marginBottom: '12px' }}>{EMOJI_MAP[cat] || '🌿'}</div>
+                                    <div style={{ fontWeight: 700, color: '#2D5016', fontSize: '14px', marginBottom: '4px' }}>{cat}</div>
+                                    <div style={{ color: '#888', fontSize: '12px' }}>Browse products</div>
                                 </div>
                             </Link>
                         ))}

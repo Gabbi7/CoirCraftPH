@@ -17,9 +17,13 @@ export default function SignInPage() {
         e.preventDefault();
         setLoading(true);
         try {
-            await signIn(form.email, form.password);
+            const user = await signIn(form.email, form.password);
             toast.success('Welcome back! 🌿');
-            navigate(from, { replace: true });
+            if (user?.role === 'seller' || user?.role === 'admin') {
+                navigate('/seller', { replace: true });
+            } else {
+                navigate(from, { replace: true });
+            }
         } catch (err) {
             toast.error(err.message);
         } finally {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Plus, Pencil, Trash2, Search, X, Package } from 'lucide-react';
-import { Products, Categories } from '../../lib/db.js';
+import { Products, CATEGORIES } from '../../lib/db.js';
 import { formatPrice, generateId } from '../../lib/utils.js';
 import { toast } from 'sonner';
 
@@ -10,47 +10,58 @@ const EMPTY_FORM = { name: '', description: '', price: '', stock: '', category: 
 
 export default function SellerInventory() {
     const [products, setProducts] = useState([]);
-    const [categories, setCategories] = useState([]);
     const [search, setSearch] = useState('');
     const [dialog, setDialog] = useState(null); // null | 'add' | 'edit' | 'delete'
     const [selected, setSelected] = useState(null);
     const [form, setForm] = useState(EMPTY_FORM);
 
-    const refresh = () => {
-        setProducts(Products.getAll().sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
-        setCategories(Categories.getAll().map(c => c.name).sort());
+    const refresh = async () => {
+        try {
+            const data = await Products.getAll();
+            setProducts(data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+        } catch (error) {
+            console.error('Refresh failed:', error);
+        }
     };
 
     useEffect(() => { refresh(); }, []);
 
-    const openAdd = () => { setForm({ ...EMPTY_FORM, category: categories[0] || '' }); setSelected(null); setDialog('add'); };
+    const openAdd = () => { setForm({ ...EMPTY_FORM, category: CATEGORIES[0] || '' }); setSelected(null); setDialog('add'); };
     const openEdit = (p) => { setSelected(p); setForm({ name: p.name, description: p.description, price: p.price, stock: p.stock, category: p.category, image_url: p.image_url || '', featured_type: p.featured_type || 'None', is_active: p.is_active }); setDialog('edit'); };
     const openDelete = (p) => { setSelected(p); setDialog('delete'); };
     const closeDialog = () => { setDialog(null); setSelected(null); };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!form.name.trim() || !form.price || !form.stock) { toast.error('Name, price, and stock are required'); return; }
         const price = parseFloat(form.price);
         const stock = parseInt(form.stock);
         if (isNaN(price) || price <= 0) { toast.error('Enter a valid price'); return; }
         if (isNaN(stock) || stock < 0) { toast.error('Enter a valid stock count'); return; }
 
-        if (dialog === 'add') {
-            Products.create({ ...form, price, stock });
-            toast.success('Product added!');
-        } else {
-            Products.update(selected.id, { ...form, price, stock });
-            toast.success('Product updated!');
+        try {
+            if (dialog === 'add') {
+                await Products.create({ ...form, price, stock });
+                toast.success('Product added!');
+            } else {
+                await Products.update(selected.id, { ...form, price, stock });
+                toast.success('Product updated!');
+            }
+            await refresh();
+            closeDialog();
+        } catch (error) {
+            toast.error('Failed to save product');
         }
-        refresh();
-        closeDialog();
     };
 
-    const handleDelete = () => {
-        Products.delete(selected.id);
-        toast.success('Product deleted');
-        refresh();
-        closeDialog();
+    const handleDelete = async () => {
+        try {
+            await Products.delete(selected.id);
+            toast.success('Product deleted');
+            await refresh();
+            closeDialog();
+        } catch (error) {
+            toast.error('Failed to delete product');
+        }
     };
 
     const filtered = products.filter(p =>
@@ -171,7 +182,7 @@ export default function SellerInventory() {
                             <div>
                                 <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#5a4030', marginBottom: '6px' }}>Category</label>
                                 <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="input-base">
-                                    {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                                 </select>
                             </div>
                             <div>
