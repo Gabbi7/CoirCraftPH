@@ -18,6 +18,7 @@ export default function Header() {
         { to: '/', label: 'Home' },
         { to: '/featured', label: 'Featured' },
         { to: '/products', label: 'Products' },
+        ...(!isSeller ? [{ to: '/signup?role=seller', label: 'Sell on CoirCraft' }] : []),
     ];
 
     const handleSignOut = () => {

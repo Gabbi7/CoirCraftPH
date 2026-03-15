@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext.jsx';
-import { Leaf, Eye, EyeOff } from 'lucide-react';
+import { Leaf, Eye, EyeOff, ShoppingBag, Store } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function SignUpPage() {
@@ -10,9 +10,15 @@ export default function SignUpPage() {
     const location = useLocation();
     const from = location.state?.from || '/';
 
+    // Get initial role from URL if present
+    const queryParams = new URLSearchParams(location.search);
+    const initialRole = queryParams.get('role') === 'seller' ? 'seller' : 'buyer';
+
+    const [role, setRole] = useState(initialRole);
     const [form, setForm] = useState({
         firstName: '',
         lastName: '',
+        storeName: '',
         email: '',
         mobileNumber: '',
         address: '',
@@ -34,19 +40,22 @@ export default function SignUpPage() {
 
         setLoading(true);
         try {
-            // Combine first and last name for the database
-            const fullName = `${form.firstName.trim()} ${form.lastName.trim()}`;
+            const fullName = role === 'buyer' 
+                ? `${form.firstName.trim()} ${form.lastName.trim()}`
+                : form.storeName.trim();
 
             await signUp({
                 email: form.email,
                 password: form.password,
+                password_confirmation: form.confirmPassword,
                 name: fullName,
                 mobile_number: form.mobileNumber,
-                address: form.address
+                address: form.address,
+                role: role
             });
 
-            toast.success('Account created successfully! 🌿');
-            navigate(from, { replace: true });
+            toast.success(role === 'buyer' ? 'Account created successfully! 🌿' : 'Seller account created! Welcome aboard! 🏪');
+            navigate(role === 'buyer' ? from : '/seller', { replace: true });
         } catch (err) {
             toast.error(err.message);
         } finally {
@@ -71,34 +80,84 @@ export default function SignUpPage() {
                 </div>
 
                 {/* Card */}
-                <div style={{ background: 'white', borderRadius: '20px', padding: '40px', boxShadow: '0 4px 24px rgba(45,80,22,0.1)', border: '1px solid #f0e8d8' }}>
-                    <h2 style={{ fontWeight: 700, fontSize: '22px', color: '#1a1a1a', marginBottom: '24px' }}>Get Started</h2>
+                <div style={{ background: 'white', borderRadius: '24px', padding: '40px', boxShadow: '0 4px 32px rgba(45,80,22,0.08)', border: '1px solid #f0e8d8' }}>
+                    
+                    {/* Role Selection Toggle */}
+                    <div style={{ display: 'flex', background: '#f5f5f0', padding: '4px', borderRadius: '14px', marginBottom: '32px' }}>
+                        <button 
+                            type="button"
+                            onClick={() => setRole('buyer')}
+                            style={{ 
+                                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                                padding: '10px', borderRadius: '10px', fontSize: '14px', fontWeight: 600,
+                                background: role === 'buyer' ? 'white' : 'transparent',
+                                color: role === 'buyer' ? '#2D5016' : '#888',
+                                border: 'none', cursor: 'pointer', transition: 'all 0.2s',
+                                boxShadow: role === 'buyer' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none'
+                            }}>
+                            <ShoppingBag size={16} /> I want to Shop
+                        </button>
+                        <button 
+                            type="button"
+                            onClick={() => setRole('seller')}
+                            style={{ 
+                                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                                padding: '10px', borderRadius: '10px', fontSize: '14px', fontWeight: 600,
+                                background: role === 'seller' ? 'white' : 'transparent',
+                                color: role === 'seller' ? '#2D5016' : '#888',
+                                border: 'none', cursor: 'pointer', transition: 'all 0.2s',
+                                boxShadow: role === 'seller' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none'
+                            }}>
+                            <Store size={16} /> I want to Sell
+                        </button>
+                    </div>
+
+                    <h2 style={{ fontWeight: 700, fontSize: '22px', color: '#1a1a1a', marginBottom: '8px' }}>
+                        {role === 'buyer' ? 'Sign up as Buyer' : 'Create Seller Account'}
+                    </h2>
+                    <p style={{ color: '#888', fontSize: '14px', marginBottom: '24px' }}>
+                        {role === 'buyer' ? 'Join our community of eco-conscious shoppers' : 'Start your business journey with CoirCraft PH'}
+                    </p>
 
                     <form onSubmit={handleSubmit}>
-                        <div style={{ display: 'flex', gap: '16px', marginBottom: '20px' }}>
-                            <div style={{ flex: 1 }}>
-                                <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#5a4030', marginBottom: '8px' }}>First Name</label>
+                        {role === 'buyer' ? (
+                            <div style={{ display: 'flex', gap: '16px', marginBottom: '20px' }}>
+                                <div style={{ flex: 1 }}>
+                                    <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#5a4030', marginBottom: '8px' }}>First Name</label>
+                                    <input
+                                        type="text"
+                                        value={form.firstName}
+                                        onChange={e => setForm({ ...form, firstName: e.target.value })}
+                                        required
+                                        placeholder="Juan"
+                                        className="input-base"
+                                    />
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#5a4030', marginBottom: '8px' }}>Last Name</label>
+                                    <input
+                                        type="text"
+                                        value={form.lastName}
+                                        onChange={e => setForm({ ...form, lastName: e.target.value })}
+                                        required
+                                        placeholder="Dela Cruz"
+                                        className="input-base"
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <div style={{ marginBottom: '20px' }}>
+                                <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#5a4030', marginBottom: '8px' }}>Store Name / Business Name</label>
                                 <input
                                     type="text"
-                                    value={form.firstName}
-                                    onChange={e => setForm({ ...form, firstName: e.target.value })}
+                                    value={form.storeName}
+                                    onChange={e => setForm({ ...form, storeName: e.target.value })}
                                     required
-                                    placeholder="Juan"
+                                    placeholder="e.g. Juan's Coir Products"
                                     className="input-base"
                                 />
                             </div>
-                            <div style={{ flex: 1 }}>
-                                <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#5a4030', marginBottom: '8px' }}>Last Name</label>
-                                <input
-                                    type="text"
-                                    value={form.lastName}
-                                    onChange={e => setForm({ ...form, lastName: e.target.value })}
-                                    required
-                                    placeholder="Dela Cruz"
-                                    className="input-base"
-                                />
-                            </div>
-                        </div>
+                        )}
 
                         <div style={{ marginBottom: '20px' }}>
                             <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#5a4030', marginBottom: '8px' }}>Email Address</label>
@@ -125,7 +184,7 @@ export default function SignUpPage() {
                         </div>
 
                         <div style={{ marginBottom: '20px' }}>
-                            <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#5a4030', marginBottom: '8px' }}>Address</label>
+                            <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#5a4030', marginBottom: '8px' }}>{role === 'buyer' ? 'Shipping Address' : 'Store Address'}</label>
                             <input
                                 type="text"
                                 value={form.address}
@@ -179,13 +238,13 @@ export default function SignUpPage() {
                             disabled={loading}
                             className="btn-forest"
                             style={{ width: '100%', padding: '14px', borderRadius: '12px', fontSize: '16px', opacity: loading ? 0.7 : 1 }}>
-                            {loading ? 'Creating account...' : 'Create Account'}
+                            {loading ? 'Creating account...' : (role === 'buyer' ? 'Create Account' : 'Open My Store')}
                         </button>
                     </form>
 
                     <div style={{ marginTop: '24px', textAlign: 'center' }}>
                         <span style={{ color: '#888', fontSize: '14px' }}>Already have an account? </span>
-                        <Link to="/signin" style={{ color: '#2D5016', textDecoration: 'none', fontSize: '14px', fontWeight: 700 }}>
+                        <Link to={role === 'buyer' ? "/signin" : "/seller/signin"} style={{ color: '#2D5016', textDecoration: 'none', fontSize: '14px', fontWeight: 700 }}>
                             Sign in
                         </Link>
                     </div>

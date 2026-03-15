@@ -16,20 +16,9 @@ export function AuthProvider({ children }) {
         setLoading(false);
     }, []);
 
-    const signIn = (email, password) => {
-        const found = Users.getByEmail(email);
-        if (!found || found.password !== password) {
-            throw new Error('Invalid email or password');
-        }
-        const { password: _, ...safeUser } = found;
-        setUser(safeUser);
-        localStorage.setItem('coco_auth_user', JSON.stringify(safeUser));
-        return safeUser;
-    };
-
-    const signUp = async (userData) => {
+    const signIn = async (email, password) => {
         try {
-            const response = await axios.post('/api/register', userData);
+            const response = await axios.post('/api/login', { email, password });
             const data = response.data;
 
             const { password: _, ...safeUser } = data.user;
@@ -44,6 +33,28 @@ export function AuthProvider({ children }) {
         }
     };
 
+    const signUp = async (userData) => {
+        try {
+            const response = await axios.post('/api/register', userData);
+            const data = response.data;
+
+            const { password: _, ...safeUser } = data.user;
+            setUser(safeUser);
+            localStorage.setItem('coco_auth_user', JSON.stringify(safeUser));
+            return safeUser;
+        } catch (err) {
+            if (err.response && err.response.data && err.response.data.message) {
+                // If Laravel returns validation errors as an object
+                if (typeof err.response.data.errors === 'object') {
+                    const firstError = Object.values(err.response.data.errors)[0][0];
+                    throw new Error(firstError);
+                }
+                throw new Error(err.response.data.message);
+            }
+            throw err;
+        }
+    };
+
     const signOut = () => {
         setUser(null);
         localStorage.removeItem('coco_auth_user');
@@ -51,7 +62,6 @@ export function AuthProvider({ children }) {
 
     const updateMe = (data) => {
         if (!user) return;
-        Users.update(user.email, data);
         const updated = { ...user, ...data };
         setUser(updated);
         localStorage.setItem('coco_auth_user', JSON.stringify(updated));

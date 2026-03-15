@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, Store, BarChart2, LogOut, ExternalLink, Tags } from 'lucide-react';
+import { LayoutDashboard, Package, Store, BarChart2, LogOut, ExternalLink, Tags, User, ClipboardList } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 
 const navItems = [
@@ -8,6 +8,8 @@ const navItems = [
     { to: '/seller/categories', icon: Tags, label: 'Categories' },
     { to: '/seller/storefront', icon: Store, label: 'Storefront' },
     { to: '/seller/reports', icon: BarChart2, label: 'Reports' },
+    { to: '/profile', icon: User, label: 'My Profile' },
+    { to: '/transactions', icon: ClipboardList, label: 'My Purchases' },
 ];
 
 export default function SellerLayout() {

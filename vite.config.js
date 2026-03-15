@@ -13,8 +13,13 @@ export default defineConfig({
         react(),
     ],
     server: {
+        host: '127.0.0.1',
         watch: {
-            ignored: ['**/storage/framework/views/**'],
+            ignored: [
+                '**/storage/framework/views/**',
+                '**/vendor/**',
+                '**/node_modules/**',
+            ],
         },
     },
     resolve: {

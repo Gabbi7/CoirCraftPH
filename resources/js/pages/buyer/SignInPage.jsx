@@ -17,7 +17,7 @@ export default function SignInPage() {
         e.preventDefault();
         setLoading(true);
         try {
-            signIn(form.email, form.password);
+            await signIn(form.email, form.password);
             toast.success('Welcome back! 🌿');
             navigate(from, { replace: true });
         } catch (err) {
@@ -86,22 +86,6 @@ export default function SignInPage() {
                         </button>
                     </form>
 
-                    {/* Demo credentials */}
-                    <div style={{ marginTop: '24px', padding: '16px', background: '#f5f9f0', borderRadius: '12px', border: '1px solid #d4e8c0' }}>
-                        <p style={{ fontSize: '12px', fontWeight: 700, color: '#2D5016', marginBottom: '8px' }}>Demo Credentials</p>
-                        {[
-                            { label: 'Buyer', email: 'buyer@coircraft.ph', password: 'password' },
-                            { label: 'Admin/Seller', email: 'admin@coircraft.ph', password: 'password' },
-                        ].map(cred => (
-                            <button key={cred.email} type="button"
-                                onClick={() => setForm({ email: cred.email, password: cred.password })}
-                                style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 10px', background: 'white', border: '1px solid #e0d5c0', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', marginBottom: '6px', transition: 'all 0.2s' }}
-                                onMouseEnter={e => { e.currentTarget.style.borderColor = '#2D5016'; }}
-                                onMouseLeave={e => { e.currentTarget.style.borderColor = '#e0d5c0'; }}>
-                                <strong style={{ color: '#2D5016' }}>{cred.label}:</strong> {cred.email}
-                            </button>
-                        ))}
-                    </div>
                     <div style={{ marginTop: '20px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <div>
                             <span style={{ color: '#888', fontSize: '14px' }}>Don't have an account? </span>
