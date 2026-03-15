@@ -132,8 +132,8 @@ export default function SellerReports() {
                 {/* Today's Sales */}
                 <div style={statCardStyle}>
                     <div style={blockLabelStyle}>Today's Sales</div>
-                    <div style={{ fontWeight: 700, fontSize: '24px', color: '#2D5016', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ fontSize: '18px' }}>₱</span>{stats.todaySales.toLocaleString()}
+                    <div style={{ fontWeight: 700, fontSize: '32px', color: '#2D5016', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span style={{ fontSize: '20px' }}>₱</span>{stats.todaySales.toLocaleString()}
                     </div>
                     <div style={subtextStyle}>{stats.todayOrders} orders</div>
                 </div>
@@ -141,8 +141,8 @@ export default function SellerReports() {
                 {/* Monthly Sales */}
                 <div style={statCardStyle}>
                     <div style={blockLabelStyle}>Monthly Sales</div>
-                    <div style={{ fontWeight: 700, fontSize: '24px', color: '#c58a22', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ fontSize: '18px' }}>₱</span>{stats.monthlySales.toLocaleString()}
+                    <div style={{ fontWeight: 700, fontSize: '32px', color: '#c58a22', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span style={{ fontSize: '20px' }}>₱</span>{stats.monthlySales.toLocaleString()}
                     </div>
                     <div style={subtextStyle}>{stats.monthlyOrders} orders</div>
                 </div>
@@ -150,8 +150,8 @@ export default function SellerReports() {
                 {/* Total Revenue */}
                 <div style={statCardStyle}>
                     <div style={blockLabelStyle}>Total Revenue</div>
-                    <div style={{ fontWeight: 700, fontSize: '24px', color: '#333', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ fontSize: '18px' }}>₱</span>{stats.totalRevenue.toLocaleString()}
+                    <div style={{ fontWeight: 700, fontSize: '32px', color: '#333', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span style={{ fontSize: '20px' }}>₱</span>{stats.totalRevenue.toLocaleString()}
                     </div>
                     <div style={subtextStyle}>{stats.totalOrders} orders total</div>
                 </div>
@@ -159,8 +159,8 @@ export default function SellerReports() {
                 {/* Avg Order Value */}
                 <div style={statCardStyle}>
                     <div style={blockLabelStyle}>Avg Order Value</div>
-                    <div style={{ fontWeight: 700, fontSize: '24px', color: '#333', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ fontSize: '18px' }}>₱</span>{Math.round(stats.avgOrder).toLocaleString()}
+                    <div style={{ fontWeight: 700, fontSize: '32px', color: '#333', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span style={{ fontSize: '20px' }}>₱</span>{Math.round(stats.avgOrder).toLocaleString()}
                     </div>
                 </div>
             </div>
@@ -170,7 +170,7 @@ export default function SellerReports() {
                 
                 {/* Last 7 Days Sales */}
                 <div style={{ background: 'white', border: '1px solid #eae5db', borderRadius: '8px', padding: '24px', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
-                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#333', marginBottom: '24px' }}>
+                    <div style={{ fontSize: '20px', fontWeight: 600, color: '#333', marginBottom: '24px' }}>
                         Last 7 Days Sales
                     </div>
                     <ResponsiveContainer width="100%" height={260}>
@@ -188,7 +188,7 @@ export default function SellerReports() {
 
                 {/* Monthly Sales Performance */}
                 <div style={{ background: 'white', border: '1px solid #eae5db', borderRadius: '8px', padding: '24px', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
-                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#333', marginBottom: '24px' }}>
+                    <div style={{ fontSize: '20px', fontWeight: 600, color: '#333', marginBottom: '24px' }}>
                         Monthly Sales Performance
                     </div>
                     {monthlyData.length === 0 ? (
@@ -213,27 +213,27 @@ export default function SellerReports() {
 
             {/* Inventory Report Block */}
             <div style={{ background: 'white', border: '1px solid #eae5db', borderRadius: '8px', padding: '24px', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
-                <div style={{ fontSize: '14px', fontWeight: 600, color: '#333', marginBottom: '20px' }}>
+                <div style={{ fontSize: '20px', fontWeight: 600, color: '#333', marginBottom: '20px' }}>
                     Inventory Report
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {/* Total Products */}
                     <div style={{ background: '#f5f3ef', borderRadius: '8px', padding: '24px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '22px', fontWeight: 700, color: '#1a1a1a', marginBottom: '6px' }}>{inventory.totalProducts}</div>
-                        <div style={{ fontSize: '12px', color: '#777' }}>Total Products</div>
+                        <div style={{ fontSize: '40px', fontWeight: 700, color: '#1a1a1a', marginBottom: '6px' }}>{inventory.totalProducts}</div>
+                        <div style={{ fontSize: '16px', color: '#777' }}>Total Products</div>
                     </div>
 
                     {/* Total Stock Units */}
                     <div style={{ background: '#f5f3ef', borderRadius: '8px', padding: '24px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '22px', fontWeight: 700, color: '#1a1a1a', marginBottom: '6px' }}>{inventory.totalStock}</div>
-                        <div style={{ fontSize: '12px', color: '#777' }}>Total Stock Units</div>
+                        <div style={{ fontSize: '40px', fontWeight: 700, color: '#1a1a1a', marginBottom: '6px' }}>{inventory.totalStock}</div>
+                        <div style={{ fontSize: '16px', color: '#777' }}>Total Stock Units</div>
                     </div>
 
                     {/* Out of Stock */}
                     <div style={{ background: '#fcf2f2', borderRadius: '8px', padding: '24px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '22px', fontWeight: 700, color: '#db4437', marginBottom: '6px' }}>{inventory.outOfStock}</div>
-                        <div style={{ fontSize: '12px', color: '#999' }}>Out of Stock</div>
+                        <div style={{ fontSize: '40px', fontWeight: 700, color: '#db4437', marginBottom: '6px' }}>{inventory.outOfStock}</div>
+                        <div style={{ fontSize: '16px', color: '#999' }}>Out of Stock</div>
                     </div>
                 </div>
             </div>

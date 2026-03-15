@@ -91,7 +91,7 @@ export default function SellerLayout() {
                 <div style={{ flex: 1 }}>
                     <Outlet />
                 </div>
-                <Footer />
+                <Footer variant="small" />
             </main>
         </div>
     );
